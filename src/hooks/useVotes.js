@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { getVotes, addVote, deleteVoteOption } from '../api/sheetdb';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getVotes, addVote, deleteVote } from '../api/sheetdb';
 import { tallyVotes, getVoteOptions, uuid } from '../lib/utils';
 
 export function useVotes() {
@@ -7,6 +7,16 @@ export function useVotes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const allVotesRef = useRef(allVotes);
+  const submittingRef = useRef(submitting);
+
+  useEffect(() => {
+    allVotesRef.current = allVotes;
+  }, [allVotes]);
+
+  useEffect(() => {
+    submittingRef.current = submitting;
+  }, [submitting]);
 
   const fetch = useCallback(async () => {
     try {
@@ -34,10 +44,17 @@ export function useVotes() {
   const hasVoted = (voter, type, option) =>
     allVotes.some((v) => v.voter === voter && v.type === type && v.option === option);
 
-  const vote = async ({ voter, type, option }) => {
-    if (hasVoted(voter, type, option)) return;
+  const vote = useCallback(async ({ voter, type, option }) => {
+    if (submittingRef.current) return;
     setSubmitting(true);
     try {
+      const votes = allVotesRef.current;
+      const oldVote = votes.find((v) => v.voter === voter && v.type === type);
+      if (oldVote) {
+        await deleteVote(oldVote.id);
+        setAllVotes((prev) => prev.filter((v) => v.id !== oldVote.id));
+      }
+
       const record = {
         id: uuid(),
         type,
@@ -47,17 +64,17 @@ export function useVotes() {
       };
       await addVote(record);
       setAllVotes((prev) => [...prev, record]);
-    } catch {
+    } catch (e) {
       throw new Error('Vote thất bại. Thử lại nhé!');
     } finally {
       setSubmitting(false);
     }
-  };
+  }, []);
 
-  const addOption = async ({ type, option, voter }) => {
+  const addOption = useCallback(async ({ type, option, voter }) => {
+    if (submittingRef.current) return;
     setSubmitting(true);
     try {
-      // Add the option AND cast first vote in one record
       const record = {
         id: uuid(),
         type,
@@ -67,12 +84,12 @@ export function useVotes() {
       };
       await addVote(record);
       setAllVotes((prev) => [...prev, record]);
-    } catch {
+    } catch (e) {
       throw new Error('Thêm lựa chọn thất bại.');
     } finally {
       setSubmitting(false);
     }
-  };
+  }, []);
 
   return {
     allVotes,

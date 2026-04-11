@@ -50,7 +50,7 @@ export default function VoteSection({
                   total={totalVotes}
                   hasVoted={hasVoted(voter, type, option)}
                   onVote={() => onVote({ voter, type, option })}
-                  disabled={submitting || !voter?.trim()}
+                  disabled={submitting}
                 />
               ))}
           </div>
@@ -59,8 +59,9 @@ export default function VoteSection({
         <AddVoteOption
           type={type}
           voter={voter}
-          onAdd={onAddOption}
+          onAddOption={onAddOption}
           submitting={submitting}
+          key={`add-${type}`}
         />
       </div>
     </div>

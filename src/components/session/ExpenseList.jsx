@@ -11,23 +11,30 @@ function CustomSelect({ value, onChange, options, placeholder }) {
   const [open, setOpen] = useState(false);
   const [rect, setRect] = useState(null);
   const btnRef = useRef(null);
+  const justOpenedRef = useRef(false);
 
   useEffect(() => {
     const handler = (e) => {
+      if (justOpenedRef.current) {
+        justOpenedRef.current = false;
+        return;
+      }
       if (btnRef.current && !btnRef.current.contains(e.target)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleOpen = () => {
+  const handleOpen = (e) => {
+    e.stopPropagation();
     if (btnRef.current) {
       setRect(btnRef.current.getBoundingClientRect());
     }
+    justOpenedRef.current = true;
     setOpen((p) => !p);
   };
 
-  const selected = options.find((o) => o.value === value);
+const selected = options.find((o) => o.value === value);
 
   return (
     <div className="relative">

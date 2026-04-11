@@ -22,8 +22,12 @@ export default function VoteCard({ option, count, total, hasVoted, onVote, disab
       <div className="relative flex items-center gap-3 px-4 py-3.5">
         {/* Vote button */}
         <button
-          onClick={onVote}
-          disabled={disabled || hasVoted}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!disabled) onVote();
+          }}
+          disabled={disabled}
           className={cn(
             'flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs transition-all duration-200',
             hasVoted

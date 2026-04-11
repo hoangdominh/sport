@@ -50,3 +50,6 @@ export const addVote = (data) =>
 
 export const deleteVoteOption = (id) =>
   api.delete(`/id/${id}?sheet=votes`).then((r) => r.data);
+
+export const deleteVote = (id) =>
+  api.delete(`/id/${id}?sheet=votes`).then((r) => r.data);

@@ -22,7 +22,7 @@ export default function Navbar() {
               <Dumbbell size={20} className="text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-display text-lg font-bold tracking-tight text-white">SportTracker</span>
+              <span className="font-display text-lg font-bold tracking-tight text-white">Sport Tracker</span>
               <span className="text-[10px] text-white/40 -mt-0.5">Quản lý chi tiêu nhóm</span>
             </div>
           </NavLink>

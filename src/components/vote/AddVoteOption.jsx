@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, Loader2 } from 'lucide-react';
 
-export default function AddVoteOption({ type, voter, onAdd, submitting }) {
+export default function AddVoteOption({ type, voter, onAddOption, submitting }) {
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
 
@@ -15,7 +15,7 @@ export default function AddVoteOption({ type, voter, onAdd, submitting }) {
     if (!voter?.trim()) return setError('Nhập tên của bạn trước');
 
     try {
-      await onAdd({ type, option: value, voter });
+      await onAddOption({ type, option: value, voter });
       setValue('');
     } catch (err) {
       setError(err.message);
@@ -23,7 +23,7 @@ export default function AddVoteOption({ type, voter, onAdd, submitting }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
+    <div className="mt-4">
       <div className="flex gap-2">
         <input
           type="text"
@@ -33,15 +33,16 @@ export default function AddVoteOption({ type, voter, onAdd, submitting }) {
           className="input-glass flex-1"
         />
         <button
-          type="submit"
+          type="button"
           disabled={submitting}
           className="btn-primary flex shrink-0 items-center gap-1.5"
+          onClick={handleSubmit}
         >
           {submitting ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
           Thêm
         </button>
       </div>
       {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
-    </form>
+    </div>
   );
 }
